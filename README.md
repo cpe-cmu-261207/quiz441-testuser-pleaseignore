@@ -7,4 +7,4 @@
 
 WARADORN SIRIPUNT 620612163
 วราดร ศิริพันธุ์ 620612163
-https://testuser-pleaseignore-quiz441.herokuapp.com/person
+https://testuser-pleaseignore-quiz441.herokuapp.com/

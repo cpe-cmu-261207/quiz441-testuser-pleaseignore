@@ -26,13 +26,8 @@ const readDbFile = () => {
 
 app.post('/login',
   (req, res) => {
-
-    const { username, password } = req.body
     // Use username and password to create token.
-
-    return res.status(200).json({
-      message: 'Login succesfully',
-    })
+    return res.status(200).json({ message: "Login succesfully"})
     const { username, password } = req.body
     const db = readDbFile()
     const user = db.users.find((data : any) => data.username === username)
@@ -48,8 +43,8 @@ app.post('/login',
     }
     const token = jwt.sign({username: user.username,password: user.password } as JWTPayload , SECRET)
     return res.status(200).json({ message:"Login successfully", token})
-  })
-
+  }
+)
 app.post('/register',
   (req, res) => {
 
@@ -80,7 +75,7 @@ app.get('/balance',
       const db = readDbFile()
       const user = db.users.find((data : any) => data.username === username)
       if(user){
-        res.status(200).json({user.username,user.balance})
+        res.status(200).json({user.username, user.balance})
       }else{
         res.status(400).json({user.message})
       }
