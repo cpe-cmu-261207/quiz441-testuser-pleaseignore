@@ -13,21 +13,32 @@ const SECRET = "SIMPLE_SECRET"
 app.use(bodyParser.json())
 app.use(cors())
 
+interface DbSchema {
+  users: User[]
+}
+
+interface User {
+  username: string
+  password: string
+  firstname: string
+  lastname: string
+  balance: number
+}
+
 interface JWTPayload {
   username: string;
   password: string;
 }
 
-const readDbFile = () => {
+const readDbFile = ():DbSchema => {
   const raw = fs.readFileSync('db.json', 'utf8')
-  const db = JSON.parse(raw)
+  const db: DbSchema = JSON.parse(raw)
   return db
 }
 
 app.post('/login',
   (req, res) => {
     // Use username and password to create token.
-    return res.status(200).json({ message: "Login succesfully"})
     const { username, password } = req.body
     const db = readDbFile()
     const user = db.users.find((data : any) => data.username === username)
@@ -57,14 +68,14 @@ app.post('/register',
       }
       const passwordhasher = bcrypt.hashSync(password, 16)
       db.users.push({
-        id: Date.now(),
         username,
         password: passwordhasher,
+        firstname,
+        lastname,
         balance 
       })
-      fs.writeFileSync('db.json', JSON.stringify(db))
+      fs.writeFileSync('db.json', JSON.stringify(db,null,2))
       res.status(200).json({ message: "Register complete" })
-      res.status(400).json({ message: "Invalid username or password" })
     })
 
 app.get('/balance',
@@ -73,15 +84,15 @@ app.get('/balance',
     try {
       const { username } = jwt.verify(token, SECRET) as JWTPayload
       const db = readDbFile()
-      const user = db.users.find((data : any) => data.username === username)
+      const user = db.users.find(data => data.username === username)
       if(user){
-        res.status(200).json({user.username, user.balance})
-      }else{
-        res.status(400).json({user.message})
+        res.status(200).json({name: user.firstname + " " + user.lastname,
+                              balance: user.balance})
       }
     }
     catch (e) {
       //response in case of invalid token
+      res.status(400).json({message:"Invalid token"})
     }
   })
 
@@ -108,7 +119,11 @@ app.delete('/reset', (req, res) => {
 })
 
 app.get('/me', (req, res) => {
-  
+  return res.status(200).json({ "firstname": "Waradorn",
+  "lastname" : "Siripunt",
+  "code" : 620612163,
+  "gpa" : 1.99})
+
 })
 
 app.get('/demo', (req, res) => {
